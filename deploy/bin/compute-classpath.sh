@@ -17,31 +17,39 @@
 # rather than ship a particular version with the binaries.
 # TODO: we need a better solution to dependencies
 
-# CDH specific classpath config
+# MapR specific classpath config
 
 function printLatest() {
-  ls -1 /opt/cloudera/parcels/CDH/jars/$1 2>/dev/null | grep -vE "tests.jar$" | tail -1
+  ls -1 $1 2>/dev/null | grep -vE "tests.jar$" | tail -1
+}
+
+function printLatestFromSpark() {
+  printLatest "/opt/mapr/spark/spark-1.6.1/lib/$1"
+}
+
+function printLatestFromHadoop() {
+  printLatest "/opt/mapr/hadoop/hadoop-0.20.2/lib/$1 /opt/mapr/hadoop/hadoop-2.7.0/share/hadoop/*/lib/$1"
 }
 
 # For Spark-based batch and speed layer, the only thing that needs to be supplied, really,
 # are the Kafka libraries that the cluster uses. The Spark Examples jar happens to ship this
 # and is maybe both easier to find and more harmonized than a stand-alone Kafka distro on
 # the cluster, but this is a hacky way to acquire it
-printLatest "spark-examples-*.jar"
+printLatestFromSpark "spark-examples-*.jar"
 
 # The remaining dependencies support the Serving Layer, which needs Hadoop, Kafka,
 # and ZK dependencies
-printLatest "spark-assembly-*.jar"
-printLatest "zookeeper-*.jar"
-printLatest "hadoop-auth-*.jar"
-printLatest "hadoop-common-*.jar"
-printLatest "hadoop-hdfs-2*.jar"
-printLatest "htrace-core4-*.jar"
-printLatest "commons-cli-1*.jar"
-printLatest "commons-collections-*.jar"
-printLatest "commons-configuration-*.jar"
-printLatest "protobuf-java-2.5*.jar"
-printLatest "snappy-java-*.jar"
+printLatestFromSpark "spark-assembly-*.jar"
+printLatestFromHadoop "zookeeper-*.jar"
+printLatestFromHadoop "hadoop-auth-*.jar"
+printLatestFromHadoop "hadoop-common-*.jar"
+printLatestFromHadoop "hadoop-hdfs-2*.jar"
+printLatestFromHadoop "htrace-core-*.jar"
+printLatestFromHadoop "commons-cli-1*.jar"
+printLatestFromHadoop "commons-collections-*.jar"
+printLatestFromHadoop "commons-configuration-*.jar"
+printLatestFromHadoop "protobuf-java-2.5*.jar"
+printLatestFromHadoop "snappy-java-*.jar"
 
 # These are needed for submitting the serving layer in YARN mode
-printLatest "hadoop-yarn-applications-distributedshell-*.jar"
+printLatest "/opt/mapr/hadoop/hadoop-2.7.0/share/hadoop/yarn/hadoop-yarn-applications-distributedshell-*.jar"
