@@ -78,7 +78,7 @@ public final class LocalKafkaBroker implements Closeable {
         // Above are for Kafka 0.8; following are for 0.9+
         //"message.max.bytes", 1 << 26, // TODO
         //"replica.fetch.max.bytes", 1 << 26 // TODO
-    ), false));
+    )));
     kafkaServer.startup();
   }
 
